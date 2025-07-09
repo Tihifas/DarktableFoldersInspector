@@ -85,9 +85,9 @@ void PrintCanonFolderStatus(DirectoryInfo canonFolder)
 
             if(nFiles > 0)
             {
-                FileInfo oldestFile = filesInExportFolder.OrderBy(f => FileHelper.DateTaken(f)).First();
-                FileInfo newestFile = filesInExportFolder.OrderByDescending(f => FileHelper.DateTaken(f)).First();
-                Console.WriteLine($"{exportFolderStatusIndent}Pictures from {FileHelper.DateTaken(oldestFile).ToShortDateString()} to {FileHelper.DateTaken(newestFile).ToShortDateString()}");
+
+                string photosTakenDatesString = GetPhotosTakenDatesString(filesInExportFolder);
+                Console.WriteLine($"{exportFolderStatusIndent}{photosTakenDatesString}");
             }
         }
     }
@@ -98,4 +98,20 @@ bool FolderNameMatchesCanonFolderNames(string name)
     bool startsWithNumber = Char.IsNumber(name[0]);
     bool endsWithCANON = name.Contains("CANON"); //contains instead of endsWith because things like 112CANON_2 should be ok.
     return startsWithNumber && endsWithCANON;
+}
+
+string GetPhotosTakenDatesString(FileInfo[] filesInExportFolder)
+{
+    FileInfo oldestFile = filesInExportFolder.OrderBy(f => FileHelper.DateTaken(f)).First();
+    string oldestFileDateString = FileHelper.DateTaken(oldestFile).ToShortDateString();
+    FileInfo newestFile = filesInExportFolder.OrderByDescending(f => FileHelper.DateTaken(f)).First();
+    string newestFileDateString = FileHelper.DateTaken(newestFile).ToShortDateString();
+
+    string datesTakenString = $"Photos taken {oldestFileDateString}";
+    if (oldestFileDateString != newestFileDateString)
+    {
+        datesTakenString += $" - {newestFileDateString}";
+    }
+
+    return datesTakenString;
 }
