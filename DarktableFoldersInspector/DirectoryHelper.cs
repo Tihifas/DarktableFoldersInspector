@@ -43,9 +43,7 @@ namespace DarktableFoldersInspector
         public static void PrintDirectoryNameIndented(DirectoryInfo directoryInfo)
         {
             string indentPrefix = IndentationForDirectory(directoryInfo);
-            Console.WriteLine($"{indentPrefix}{directoryInfo.Name}");
+            ConsoleHelper.WriteColoredMessage($"{indentPrefix}{directoryInfo.Name}", ConsoleColor.Blue);
         }
-
-
     }
 }

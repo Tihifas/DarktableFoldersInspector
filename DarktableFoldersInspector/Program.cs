@@ -2,31 +2,35 @@
 using DarktableFoldersInspector;
 using System.IO;
 
-DirectoryInfo darktableLibraryRootDI = new DirectoryInfo("F:\\Canon EOS R10\\Darktable Library");
-if(!darktableLibraryRootDI.Exists) 
+Console.WriteLine(""); //For better readability
+
+DirectoryInfo darktableLibraryRootFolder = new DirectoryInfo("F:\\Canon EOS R10\\Darktable Library");
+if(!darktableLibraryRootFolder.Exists) 
 {
     Console.WriteLine("Darktable Library root directory does not exist. Press eny key to close");
     Console.ReadKey();
     return 3;
 }
 
-Console.WriteLine($"Inspecting Darktable Library folder: {darktableLibraryRootDI.FullName}");
+Console.WriteLine($"Inspecting Darktable Library folder: {darktableLibraryRootFolder.FullName}");
+
+DirectoryHelper.PrintDirectoryNameIndented(darktableLibraryRootFolder);
+
 
 PrintStatusOfAllSubFolders();
 
 //FolderHelper.PrintFolderAndAllSubfoldersNames(darktableLibraryRootDI);
 
 
-Console.WriteLine("Job finished. Press eny key to close.");
-Console.ReadKey();
+//Console.WriteLine("Job finished. Press any key to close.");
+//Console.ReadKey();
 return 0;
 
 void PrintStatusOfAllSubFolders()
 {
-    var subFolders = darktableLibraryRootDI.GetDirectories();
+    var subFolders = darktableLibraryRootFolder.GetDirectories();
     foreach (var subFolder in subFolders)
     {
-        DirectoryHelper.PrintDirectoryNameIndented(subFolder);
         string statusIndent = DirectoryHelper.IndentationForDirectory(subFolder, nExtraElements: 1);
         if (!FolderNameMatchesCanonFolderNames(subFolder.Name)){
             Console.WriteLine($"{statusIndent}This folder does not match the expected Canon folder name pattern (starts with number and ends with 'CANON').");
@@ -35,21 +39,22 @@ void PrintStatusOfAllSubFolders()
         {
             PrintCanonFolderStatus(subFolder);
         }
-
-
-
     }
 }
 
 void PrintCanonFolderStatus(DirectoryInfo canonFolder)
 {
+    Console.WriteLine(""); //Empty for spacing between folders printed
+
+    DirectoryHelper.PrintDirectoryNameIndented(canonFolder);
+
     string canonFolderIndent = DirectoryHelper.IndentationForDirectory(canonFolder, nExtraElements: 1);
     //Print if no export folder
     var exportFolders = canonFolder.GetDirectories("darktable_exported*", SearchOption.TopDirectoryOnly);
 
     if (exportFolders.Length == 0)
     {
-        ConsoleHelper.WriteError($"{canonFolderIndent}No export folder found.");
+        ConsoleHelper.WriteError($"{canonFolderIndent}No export folders found.");
     }
     else
     {
@@ -61,11 +66,18 @@ void PrintCanonFolderStatus(DirectoryInfo canonFolder)
             int nFiles = filesInExportFolder.Length;
             string exportFolderStatusIndent = DirectoryHelper.IndentationForDirectory(exportFolder, nExtraElements: 1);
             Console.WriteLine($"{exportFolderStatusIndent}Number of files: {nFiles}");
-            int limitForWarning = 5;
-            if (nFiles < limitForWarning)
+
+            bool isStandardExportFolder = (exportFolder.Name == "darktable_exported");
+
+            if (isStandardExportFolder)
             {
-                ConsoleHelper.WriteWarning($"{exportFolderStatusIndent}Export folder contains less than {limitForWarning} files.");
+                int limitForWarning = 5;
+                if (nFiles < limitForWarning)
+                {
+                    ConsoleHelper.WriteWarning($"{exportFolderStatusIndent}Standard export folder contains less than {limitForWarning} files.");
+                }
             }
+
             if(nFiles > 0)
             {
                 FileInfo oldestFile = filesInExportFolder.OrderBy(f => FileHelper.DateTaken(f)).First();
