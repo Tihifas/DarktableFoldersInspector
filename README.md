@@ -1,4 +1,6 @@
 # DarktableFoldersInspector
 
 Example run
-[Example run image text](DarktableFoldersInspector/Example run.PNG)
+<img src="DarktableFoldersInspector/Example run.PNG" alt="Example run image"/>
+
+In it's current state it only works with my own DarkTable folder path.
