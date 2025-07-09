@@ -1,13 +1,19 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DarktableFoldersInspector;
+using System.Diagnostics;
 using System.IO;
+using System.Runtime.InteropServices;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 Console.WriteLine(""); //For better readability
 
-DirectoryInfo darktableLibraryRootFolder = new DirectoryInfo("F:\\Canon EOS R10\\Darktable Library");
+string darktableLibraryRootFolderPath = "F:\\Canon EOS R10\\Darktable Library";
+DirectoryInfo darktableLibraryRootFolder = new DirectoryInfo(darktableLibraryRootFolderPath);
 if(!darktableLibraryRootFolder.Exists) 
 {
-    Console.WriteLine("Darktable Library root directory does not exist. Press eny key to close");
+    Console.WriteLine("Darktable Library root directory not found.");
+    Console.WriteLine($"Path checked: {darktableLibraryRootFolderPath}");
+    Console.WriteLine("Press any key to quit");
     Console.ReadKey();
     return 3;
 }
@@ -19,12 +25,11 @@ DirectoryHelper.PrintDirectoryNameIndented(darktableLibraryRootFolder);
 
 PrintStatusOfAllSubFolders();
 
-//FolderHelper.PrintFolderAndAllSubfoldersNames(darktableLibraryRootDI);
-
-
-//Console.WriteLine("Job finished. Press any key to close.");
-//Console.ReadKey();
+Console.WriteLine("");
+Console.WriteLine("Inspection finished. Press any key to quit.");
+Console.ReadKey();
 return 0;
+
 
 void PrintStatusOfAllSubFolders()
 {
