@@ -53,6 +53,8 @@ void PrintCanonFolderStatus(DirectoryInfo canonFolder)
 
     DirectoryHelper.PrintDirectoryNameIndented(canonFolder);
 
+    PrintStatusFromFileIfExists(canonFolder);
+
     string canonFolderIndent = DirectoryHelper.IndentationForDirectory(canonFolder, nExtraElements: 1);
     //Print if no export folder
     var exportFolders = canonFolder.GetDirectories("darktable_exported*", SearchOption.TopDirectoryOnly);
@@ -90,6 +92,33 @@ void PrintCanonFolderStatus(DirectoryInfo canonFolder)
                 Console.WriteLine($"{exportFolderStatusIndent}{photosTakenDatesString}");
             }
         }
+    }
+}
+
+void PrintStatusFromFileIfExists(DirectoryInfo canonFolder)
+{
+    //Not done status
+    string notDoneFileIndicator = "notdone "; //space is intentional
+    FileInfo notDoneFile = canonFolder.GetFiles($"{notDoneFileIndicator}*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+    if(notDoneFile is not null)
+    {
+        string fileName = notDoneFile.Name;
+        string statusMessageWithExt = fileName.Split($"{notDoneFileIndicator}")[1].ToString();
+        string statusMessage = statusMessageWithExt.Split($".")[0].ToString(); //Cutting extention off
+        string indent = DirectoryHelper.IndentationForDirectory(canonFolder, nExtraElements: 1);
+        ConsoleHelper.WriteWarning($"{indent}Status: {statusMessage}");
+    }
+
+    //Done status
+    string doneFileIndicator = "done "; //space is intentional
+    FileInfo doneFile = canonFolder.GetFiles($"{doneFileIndicator}*", SearchOption.TopDirectoryOnly).FirstOrDefault();
+    if(doneFile is not null)
+    {
+        string fileName = doneFile.Name;
+        string statusMessageWithExt = fileName.Split($"{doneFileIndicator}")[1].ToString();
+        string statusMessage = statusMessageWithExt.Split($".")[0].ToString(); //Cutting extention off
+        string indent = DirectoryHelper.IndentationForDirectory(canonFolder, nExtraElements: 1);
+        ConsoleHelper.WriteColoredMessage($"{indent}Status: {statusMessage}", ConsoleColor.Green);
     }
 }
 
