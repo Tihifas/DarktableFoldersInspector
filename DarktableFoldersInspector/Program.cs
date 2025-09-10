@@ -4,17 +4,32 @@ using Microsoft.Extensions.Configuration;
 
 Console.WriteLine(""); //For better readability
 
-IConfiguration config = new ConfigurationBuilder()
-    .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: true)
-    .Build();
+//TODO: wrapt this in try catch, i think it can throw exceptions if / are not escaped.
+IConfiguration configuration;
+try
+{
+    configuration = new ConfigurationBuilder()
+        .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: true)
+        .Build();
+}
+catch (Exception)
+{
+    Console.WriteLine("Reading appsettings.json caused error. Check if json syntax is correct and if darktableLibraryRootFolderPath is valid.");
+    Console.WriteLine("Example of valid path: \"C:\\\\Photos\\\\Darktable Library\"");
+    Console.WriteLine("Press any key to quit");
+    Console.ReadKey();
+    return 3;
+}
 
-string darktableLibraryRootFolderPath = config["darktableLibraryRootFolderPath"];
+
+
+string darktableLibraryRootFolderPath = configuration["darktableLibraryRootFolderPath"];
 string placeholderFolderPath = "SetThis";
 
 
 if (string.IsNullOrEmpty(darktableLibraryRootFolderPath) || darktableLibraryRootFolderPath == placeholderFolderPath)
 {
-    Console.WriteLine("darktableLibraryRootFolderPath is not set in appsettings.json.");
+    Console.WriteLine("darktableLibraryRootFolderPath is not set in appsettings.json. Use double backslash in path, like fx \"C:\\\\Photos\\\\Darktable Library\"");
     Console.WriteLine("Press any key to quit");
     Console.ReadKey();
     return 3;
