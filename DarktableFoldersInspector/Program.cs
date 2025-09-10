@@ -1,13 +1,25 @@
 ﻿// See https://aka.ms/new-console-template for more information
 using DarktableFoldersInspector;
-using System.Diagnostics;
-using System.IO;
-using System.Runtime.InteropServices;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.Extensions.Configuration;
 
 Console.WriteLine(""); //For better readability
 
-string darktableLibraryRootFolderPath = "F:\\Canon EOS R10\\Darktable Library";
+IConfiguration config = new ConfigurationBuilder()
+    .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"), optional: false, reloadOnChange: true)
+    .Build();
+
+string darktableLibraryRootFolderPath = config["darktableLibraryRootFolderPath"];
+string placeholderFolderPath = "SetThis";
+
+
+if (string.IsNullOrEmpty(darktableLibraryRootFolderPath) || darktableLibraryRootFolderPath == placeholderFolderPath)
+{
+    Console.WriteLine("darktableLibraryRootFolderPath is not set in appsettings.json.");
+    Console.WriteLine("Press any key to quit");
+    Console.ReadKey();
+    return 3;
+}
+
 DirectoryInfo darktableLibraryRootFolder = new DirectoryInfo(darktableLibraryRootFolderPath);
 if(!darktableLibraryRootFolder.Exists) 
 {
@@ -17,6 +29,7 @@ if(!darktableLibraryRootFolder.Exists)
     Console.ReadKey();
     return 3;
 }
+
 
 Console.WriteLine($"Inspecting Darktable Library folder: {darktableLibraryRootFolder.FullName}");
 
